@@ -1,7 +1,7 @@
 // Estado del examen
 const estadoExamen = {
     preguntaActual: 0,
-    respuestasUsuario: new Array(270).fill(null),
+    respuestasUsuario: [],
     tiempoInicio: null,
     tiempoTranscurrido: 0,
     timerInterval: null,
@@ -12,6 +12,10 @@ const estadoExamen = {
 
 // Array para almacenar el orden aleatorio de las preguntas
 let preguntasAleatorias = [];
+
+// Constantes para las cantidades de preguntas
+const PREGUNTAS_PRACTICA = 20;
+const PREGUNTAS_EXAMEN = 80;
 
 // Función para mezclar array (algoritmo Fisher-Yates)
 function mezclarArray(array) {
@@ -31,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Función principal de inicialización
 function inicializarExamen() {
     // Mezclar preguntas aleatoriamente al iniciar
-    preguntasAleatorias = mezclarArray(preguntasDB);
+    seleccionarPreguntasSegunModo();
     estadoExamen.tiempoInicio = new Date();
     generarNavegacion();
     mostrarPregunta(0);
@@ -42,6 +46,14 @@ function inicializarExamen() {
     mostrarInfoModos();
 }
 
+// Seleccionar preguntas según el modo actual
+function seleccionarPreguntasSegunModo() {
+    const preguntasMezcladas = mezclarArray(preguntasDB);
+    const cantidadPreguntas = estadoExamen.modoPractica ? PREGUNTAS_PRACTICA : PREGUNTAS_EXAMEN;
+    preguntasAleatorias = preguntasMezcladas.slice(0, cantidadPreguntas);
+    estadoExamen.respuestasUsuario = new Array(cantidadPreguntas).fill(null);
+}
+
 // Mostrar información sobre los modos
 function mostrarInfoModos() {
     const tooltip = document.createElement('div');
@@ -49,8 +61,8 @@ function mostrarInfoModos() {
     tooltip.innerHTML = `
         <div class="info-tooltip-content">
             <strong>💡 Elige tu modo:</strong><br>
-            <strong>📝 Modo Examen:</strong> Evalúa tu nivel sin feedback hasta el final<br>
-            <strong>📚 Modo Práctica:</strong> Aprende con feedback inmediato (verde/rojo)
+            <strong>📝 Modo Examen:</strong> ${PREGUNTAS_EXAMEN} preguntas aleatorias - Evalúa tu nivel sin feedback hasta el final<br>
+            <strong>📚 Modo Práctica:</strong> ${PREGUNTAS_PRACTICA} preguntas aleatorias - Aprende con feedback inmediato (verde/rojo)
             <button onclick="this.parentElement.parentElement.remove()" class="btn-cerrar-info">×</button>
         </div>
     `;
@@ -380,7 +392,10 @@ function mostrarResultados(correctas, incorrectas, sinResponder, porcentaje, apr
             <strong>Tiempo total:</strong> ${tiempoTotal}
         </div>
         <div class="resultado-item">
-            <strong>Total de preguntas:</strong> ${preguntasDB.length}
+            <strong>Total de preguntas:</strong> ${preguntasAleatorias.length}
+        </div>
+        <div class="resultado-item">
+            <strong>Modo:</strong> ${estadoExamen.modoPractica ? 'Práctica' : 'Examen'}
         </div>
         <div class="resultado-item">
             <strong>Nota mínima para aprobar:</strong> 60%
@@ -428,12 +443,11 @@ function verRespuestasDetalladas() {
 
 // Reiniciar examen
 function reiniciarExamen() {
-    if (confirm('¿Estás seguro de que quieres reiniciar el examen? Perderás todo tu progreso.')) {
-        // Mezclar preguntas de nuevo para un nuevo orden
-        preguntasAleatorias = mezclarArray(preguntasDB);
+    if (confirm('¿Estás seguro de que quieres reiniciar? Se generarán nuevas preguntas aleatorias y perderás todo tu progreso.')) {
+        // Seleccionar nuevas preguntas aleatorias según el modo actual
+        seleccionarPreguntasSegunModo();
         
         estadoExamen.preguntaActual = 0;
-        estadoExamen.respuestasUsuario = new Array(270).fill(null);
         estadoExamen.tiempoInicio = new Date();
         estadoExamen.tiempoTranscurrido = 0;
         estadoExamen.examenFinalizado = false;
@@ -471,9 +485,34 @@ function configurarEventos() {
     // Toggle modo práctica/examen
     const modoPracticaToggle = document.getElementById('modo-practica');
     modoPracticaToggle.addEventListener('change', (e) => {
-        estadoExamen.modoPractica = e.target.checked;
-        // Actualizar la pregunta actual para reflejar el cambio de modo
-        mostrarPregunta(estadoExamen.preguntaActual);
+        const cambiarModo = confirm(
+            e.target.checked 
+                ? `¿Cambiar a Modo Práctica? Se mostrarán ${PREGUNTAS_PRACTICA} preguntas aleatorias con feedback inmediato.`
+                : `¿Cambiar a Modo Examen? Se mostrarán ${PREGUNTAS_EXAMEN} preguntas aleatorias sin feedback hasta el final.`
+        );
+        
+        if (cambiarModo) {
+            estadoExamen.modoPractica = e.target.checked;
+            estadoExamen.preguntaActual = 0;
+            estadoExamen.examenFinalizado = false;
+            estadoExamen.modoRevision = false;
+            
+            // Seleccionar nuevas preguntas aleatorias según el modo
+            seleccionarPreguntasSegunModo();
+            
+            // Reiniciar temporizador
+            detenerTemporizador();
+            estadoExamen.tiempoInicio = new Date();
+            estadoExamen.tiempoTranscurrido = 0;
+            
+            // Regenerar navegación y mostrar primera pregunta
+            generarNavegacion();
+            mostrarPregunta(0);
+            iniciarTemporizador();
+        } else {
+            // Revertir el toggle si el usuario cancela
+            e.target.checked = !e.target.checked;
+        }
     });
     
     document.getElementById('btn-anterior').addEventListener('click', irAnterior);
