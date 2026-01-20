@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Examen - Estilo Moodle</title>
+    <link rel="stylesheet" href="../css/estilo.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Simulador de Examen</h1>
+            <div class="info-bar">
+                <span id="tiempo">Tiempo: <strong>00:00:00</strong></span>
+                <span id="progreso">Progreso: <strong>0/270</strong></span>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Navegación lateral -->
+            <aside class="sidebar">
+                <h3>Navegación de Preguntas</h3>
+                <div id="navegacion-preguntas" class="nav-preguntas"></div>
+            </aside>
+
+            <!-- Área de preguntas -->
+            <main class="exam-area">
+                <div id="pregunta-actual" class="pregunta-container"></div>
+                
+                <div class="botones-navegacion">
+                    <button id="btn-anterior" class="btn btn-secondary">← Anterior</button>
+                    <button id="btn-siguiente" class="btn btn-primary">Siguiente →</button>
+                    <button id="btn-finalizar" class="btn btn-success" style="display:none;">Finalizar Examen</button>
+                </div>
+            </main>
+        </div>
+
+        <!-- Modal de resultados -->
+        <div id="modal-resultados" class="modal">
+            <div class="modal-content">
+                <h2>Resultados del Examen</h2>
+                <div id="resultados-contenido"></div>
+                <div class="modal-botones">
+                    <button id="btn-ver-respuestas" class="btn btn-info">Ver Respuestas Detalladas</button>
+                    <button id="btn-reiniciar" class="btn btn-primary">Reiniciar Examen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/preguntas.js"></script>
+    <script src="../js/examen.js"></script>
+</body>
+</html>
