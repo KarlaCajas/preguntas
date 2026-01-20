@@ -46,6 +46,136 @@ body {
     display: flex;
     gap: 30px;
     font-size: 14px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Toggle de Modo */
+.modo-toggle {
+    display: flex;
+    align-items: center;
+}
+
+.toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.toggle-checkbox {
+    display: none;
+}
+
+.toggle-switch {
+    position: relative;
+    width: 50px;
+    height: 26px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 13px;
+    transition: all 0.3s;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.toggle-switch::before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: white;
+    top: 1px;
+    left: 2px;
+    transition: all 0.3s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.toggle-checkbox:checked + .toggle-switch {
+    background: #28a745;
+    border-color: #28a745;
+}
+
+.toggle-checkbox:checked + .toggle-switch::before {
+    transform: translateX(24px);
+}
+
+.toggle-text {
+    font-size: 13px;
+    font-weight: 500;
+    color: white;
+}
+
+.modo-practica-text {
+    display: none;
+}
+
+.toggle-checkbox:checked ~ .toggle-text .modo-examen {
+    display: none;
+}
+
+.toggle-checkbox:checked ~ .toggle-text .modo-practica-text {
+    display: inline;
+}
+
+/* Tooltip informativo */
+.info-tooltip {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 1001;
+    animation: slideInRight 0.5s ease;
+    opacity: 1;
+    transition: opacity 0.3s;
+}
+
+.info-tooltip-content {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px 25px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    max-width: 350px;
+    font-size: 14px;
+    line-height: 1.6;
+    position: relative;
+}
+
+.info-tooltip-content strong {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.btn-cerrar-info {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 1;
+    transition: all 0.3s;
+}
+
+.btn-cerrar-info:hover {
+    background: rgba(255,255,255,0.3);
+    transform: rotate(90deg);
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
 /* Main Content */
@@ -110,6 +240,20 @@ body {
 .nav-btn.incorrecta {
     background: var(--danger-color);
     color: white;
+}
+
+.nav-btn.correcta-practica-nav {
+    background: #d4edda;
+    border-color: var(--success-color);
+    color: var(--success-color);
+    font-weight: 600;
+}
+
+.nav-btn.incorrecta-practica-nav {
+    background: #f8d7da;
+    border-color: var(--danger-color);
+    color: var(--danger-color);
+    font-weight: 600;
 }
 
 /* Exam Area */
@@ -212,6 +356,43 @@ body {
     color: var(--danger-color);
     font-weight: bold;
     font-size: 20px;
+}
+
+/* Estilos para modo práctica */
+.opcion.correcta-practica {
+    border-color: var(--success-color);
+    background: #d4edda;
+    animation: pulsoVerde 0.5s ease;
+}
+
+.opcion.correcta-practica::after {
+    content: "✓ Correcto";
+    color: var(--success-color);
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.opcion.incorrecta-practica {
+    border-color: var(--danger-color);
+    background: #f8d7da;
+    animation: pulsoRojo 0.5s ease;
+}
+
+.opcion.incorrecta-practica::after {
+    content: "✗ Incorrecto";
+    color: var(--danger-color);
+    font-weight: bold;
+    font-size: 16px;
+}
+
+@keyframes pulsoVerde {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); box-shadow: 0 0 15px rgba(40, 167, 69, 0.4); }
+}
+
+@keyframes pulsoRojo {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); box-shadow: 0 0 15px rgba(220, 53, 69, 0.4); }
 }
 
 /* Botones */
@@ -419,27 +600,197 @@ body {
 
 /* Responsive */
 @media (max-width: 768px) {
+    .container {
+        padding: 0;
+    }
+
+    .header {
+        padding: 15px;
+    }
+
+    .header h1 {
+        font-size: 18px;
+        margin-bottom: 8px;
+    }
+
+    .info-bar {
+        flex-direction: column;
+        gap: 8px;
+        font-size: 12px;
+    }
+
+    .modo-toggle {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .toggle-text {
+        font-size: 12px;
+    }
+
+    .info-tooltip {
+        top: auto;
+        bottom: 20px;
+        right: 10px;
+        left: 10px;
+    }
+
+    .info-tooltip-content {
+        font-size: 12px;
+        padding: 15px;
+        max-width: 100%;
+    }
+    
+    @keyframes slideInRight {
+        from {
+            transform: translateY(100px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
     .main-content {
         flex-direction: column;
     }
 
     .sidebar {
         width: 100%;
-        max-height: 200px;
+        max-height: 150px;
         border-right: none;
         border-bottom: 1px solid var(--border-color);
+        padding: 10px;
+        overflow-x: auto;
+    }
+
+    .sidebar h3 {
+        font-size: 14px;
+        margin-bottom: 10px;
     }
 
     .nav-preguntas {
         grid-template-columns: repeat(10, 1fr);
+        gap: 5px;
     }
 
-    .estadisticas {
-        grid-template-columns: 1fr;
+    .nav-btn {
+        padding: 6px;
+        font-size: 11px;
+        min-width: 30px;
+    }
+
+    .exam-area {
+        padding: 15px;
+    }
+
+    .pregunta-container {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+    .pregunta-header {
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+    }
+
+    .pregunta-numero {
+        font-size: 12px;
+    }
+
+    .pregunta-texto {
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+
+    .opciones {
+        gap: 10px;
+    }
+
+    .opcion {
+        padding: 12px 15px;
+    }
+
+    .opcion input[type="radio"] {
+        width: 18px;
+        height: 18px;
+    }
+
+    .opcion label {
+        font-size: 14px;
+        line-height: 1.5;
     }
 
     .botones-navegacion {
         flex-direction: column;
+        gap: 10px;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+
+    .estadisticas {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .estadistica {
+        padding: 15px;
+    }
+
+    .estadistica-valor {
+        font-size: 24px;
+    }
+
+    .modal-content {
+        padding: 20px;
+        width: 95%;
+        max-height: 90vh;
+    }
+
+    .modal-content h2 {
+        font-size: 20px;
+    }
+
+    .resultado-score {
+        font-size: 36px;
+        margin: 20px 0;
+    }
+
+    .modal-botones {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .modal-botones .btn {
+        width: 100%;
+    }
+
+    .revision-item {
+        padding: 15px;
+    }
+}
+
+/* Mejoras adicionales para pantallas pequeñas */
+@media (max-width: 480px) {
+    .header h1 {
+        font-size: 16px;
+    }
+
+    .nav-preguntas {
+        grid-template-columns: repeat(8, 1fr);
+    }
+
+    .pregunta-texto {
+        font-size: 15px;
+    }
+
+    .opcion label {
+        font-size: 13px;
     }
 }
 
