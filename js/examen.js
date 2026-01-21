@@ -190,7 +190,15 @@ function mostrarPregunta(indice) {
             }
             
             // Verificar que la opción tenga contenido
-            const textoOpcion = opcion && typeof opcion === 'string' && opcion.trim() !== '' ? opcion : '[Opción vacía]';
+            let textoOpcion = opcion && typeof opcion === 'string' && opcion.trim() !== '' ? opcion : '[Opción vacía]';
+            
+            // Escapar HTML para evitar que las etiquetas se interpreten
+            textoOpcion = textoOpcion
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
             
             html += `
                 <div class="opcion ${claseSeleccionada} ${claseRevision} ${clasePractica}" onclick="seleccionarOpcion(${i})">
