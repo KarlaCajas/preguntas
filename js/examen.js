@@ -237,14 +237,11 @@ function seleccionarOpcion(indice) {
                     opcion.classList.add('correcta-practica');
                 } else {
                     opcion.classList.add('incorrecta-practica');
-                    // También resaltar la respuesta correcta
-                    document.querySelectorAll('.opcion').forEach((opt, idx) => {
-                        if (idx === preguntaActual.respuestaCorrecta) {
-                            opt.classList.add('correcta-practica');
-                        }
-                    });
                 }
             }
+        } else if (estadoExamen.modoPractica && !esCorrecta && i === preguntaActual.respuestaCorrecta) {
+            // Si la respuesta fue incorrecta, también mostrar la correcta
+            opcion.classList.add('correcta-practica');
         }
     });
     
