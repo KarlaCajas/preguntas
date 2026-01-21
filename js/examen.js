@@ -69,6 +69,10 @@ function seleccionarPreguntasSegunModo() {
     const cantidadPreguntas = estadoExamen.modoPractica ? PREGUNTAS_PRACTICA : PREGUNTAS_EXAMEN;
     preguntasAleatorias = preguntasMezcladas.slice(0, cantidadPreguntas);
     estadoExamen.respuestasUsuario = new Array(cantidadPreguntas).fill(null);
+    
+    console.log(`🔢 Modo: ${estadoExamen.modoPractica ? 'PRÁCTICA' : 'EXAMEN'}`);
+    console.log(`🔢 Cantidad de preguntas seleccionadas: ${cantidadPreguntas}`);
+    console.log(`🔢 Total preguntas en array: ${preguntasAleatorias.length}`);
 }
 
 // Mostrar información sobre los modos
