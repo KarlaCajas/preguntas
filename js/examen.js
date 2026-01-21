@@ -14,7 +14,7 @@ const estadoExamen = {
 let preguntasAleatorias = [];
 
 // Constantes para las cantidades de preguntas
-const PREGUNTAS_PRACTICA = 20;
+const PREGUNTAS_PRACTICA = 40;
 const PREGUNTAS_EXAMEN = 80;
 
 // Función para mezclar array (algoritmo Fisher-Yates)
@@ -48,7 +48,24 @@ function inicializarExamen() {
 
 // Seleccionar preguntas según el modo actual
 function seleccionarPreguntasSegunModo() {
-    const preguntasMezcladas = mezclarArray(preguntasDB);
+    // Filtrar preguntas válidas (que tengan opciones)
+    const preguntasValidas = preguntasDB.filter(p => {
+        const esValida = p && 
+                        p.pregunta && 
+                        Array.isArray(p.opciones) && 
+                        p.opciones.length > 0 && 
+                        p.opciones.every(op => op && typeof op === 'string' && op.trim() !== '') &&
+                        typeof p.respuestaCorrecta === 'number';
+        
+        if (!esValida) {
+            console.warn('Pregunta inválida filtrada:', p);
+        }
+        return esValida;
+    });
+    
+    console.log(`Preguntas válidas: ${preguntasValidas.length} de ${preguntasDB.length}`);
+    
+    const preguntasMezcladas = mezclarArray(preguntasValidas);
     const cantidadPreguntas = estadoExamen.modoPractica ? PREGUNTAS_PRACTICA : PREGUNTAS_EXAMEN;
     preguntasAleatorias = preguntasMezcladas.slice(0, cantidadPreguntas);
     estadoExamen.respuestasUsuario = new Array(cantidadPreguntas).fill(null);
@@ -130,8 +147,11 @@ function mostrarPregunta(indice) {
         <div class="opciones">
     `;
     
-    // Verificar que las opciones existan
-    if (pregunta.opciones && pregunta.opciones.length > 0) {
+    // Verificar que las opciones existan y sean válidas
+    if (!pregunta || !pregunta.opciones || !Array.isArray(pregunta.opciones) || pregunta.opciones.length === 0) {
+        console.error('Error: Pregunta sin opciones válidas:', pregunta);
+        html += '<p style="color: red; padding: 20px;">Error: Esta pregunta no tiene opciones disponibles. ID: ' + (pregunta ? pregunta.id : 'desconocido') + '</p>';
+    } else {
         pregunta.opciones.forEach((opcion, i) => {
             const seleccionada = estadoExamen.respuestasUsuario[indice] === i;
             const claseSeleccionada = seleccionada ? 'seleccionada' : '';
@@ -165,6 +185,9 @@ function mostrarPregunta(indice) {
                 clasePractica = 'correcta-practica';
             }
             
+            // Verificar que la opción tenga contenido
+            const textoOpcion = opcion && typeof opcion === 'string' && opcion.trim() !== '' ? opcion : '[Opción vacía]';
+            
             html += `
                 <div class="opcion ${claseSeleccionada} ${claseRevision} ${clasePractica}" onclick="seleccionarOpcion(${i})">
                     <input type="radio" 
@@ -173,12 +196,10 @@ function mostrarPregunta(indice) {
                            value="${i}" 
                            ${seleccionada ? 'checked' : ''}
                            ${estadoExamen.modoRevision ? 'disabled' : ''}>
-                    <label for="opcion${i}">${opcion}</label>
+                    <label for="opcion${i}">${textoOpcion}</label>
                 </div>
             `;
         });
-    } else {
-        html += '<p style="color: red;">Error: Esta pregunta no tiene opciones disponibles.</p>';
     }
     
     html += '</div>';
